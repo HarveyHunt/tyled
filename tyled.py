@@ -16,10 +16,12 @@ def main(args):
     tile = Image.open(args.tile).convert('RGBA')
     out = Image.new('RGBA', (args.width, args.height), args.background)
 
+    check_tile()
+
     if args.tile_filters:
         tile = apply_filters(tile, args.tile_filters.split(','))
 
-    if out.size[0] % tile.size[0] is not 0 or out.size[1] % tile.size[1] is not 0:
+    if out.size[0] % tile.size[0] is not 0:
         raise TileNotAFactor('Tile of size {0} x {1} doesn\'t fit perfectly'
                ' in {2} x {3}'.format(*(tile.size + out.size)))
 
