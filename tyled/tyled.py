@@ -4,16 +4,13 @@ import logging
 from PIL import Image, ImageFilter
 
 
-class TileNotAFactor(Exception):
-    pass
-
 def main(args):
     tile = Image.open(args.tile).convert('RGBA')
     out = Image.new('RGBA', (args.width, args.height), args.background)
 
     check_tile(tile)
     if out.size[0] % tile.size[0] or out.size[1] % tile.size[1]:
-        raise TileNotAFactor('Tile of size {0} x {1} doesn\'t fit perfectly'
+        logging.warn('Tile of size {0} x {1} doesn\'t fit perfectly'
                ' in {2} x {3}'.format(*(tile.size + out.size)))
 
     if args.tile_filters:
