@@ -32,3 +32,5 @@ Usage
 * **-s / --show:** When set, the generated image will be displayed upon completion.
 
 * **-v / --verbose:** Whether or not to display extra information during processing.
+
+* **-b / --brightness:** Increase or decrease the brightness of the generated image. Values about 1 will increase the brightness, values below will decrease.
