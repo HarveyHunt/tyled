@@ -16,14 +16,13 @@ def main(args):
     tile = Image.open(args.tile).convert('RGBA')
     out = Image.new('RGBA', (args.width, args.height), args.background)
 
-    check_tile()
-
-    if args.tile_filters:
-        tile = apply_filters(tile, args.tile_filters.split(','))
-
+    check_tile(tile)
     if out.size[0] % tile.size[0] is not 0:
         raise TileNotAFactor('Tile of size {0} x {1} doesn\'t fit perfectly'
                ' in {2} x {3}'.format(*(tile.size + out.size)))
+
+    if args.tile_filters:
+        tile = apply_filters(tile, args.tile_filters.split(','))
 
     make_grid(out, tile, args.verbose)
     if args.out_filters:
@@ -80,8 +79,10 @@ if __name__ == '__main__':
             help='The background colour that will be displayed where the tile has alpha')
     parser.add_argument('-w', '--width', type=int, required=True)
     parser.add_argument('-h', '--height', type=int, required=True)
-    parser.add_argument('-of', '--out-filters', type=str)
-    parser.add_argument('-tf', '--tile-filters', type=str)
+    parser.add_argument('-of', '--out-filters', type=str, help='A comma '
+    'separated list of filters to be applied to the output image')
+    parser.add_argument('-tf', '--tile-filters', type=str, help='A comma '
+    'separated list of filters to be applied to the tile image')
     parser.add_argument('-s', '--show', action='store_true',
             help='Show the image upon completion')
     parser.add_argument('-v', '--verbose', action='store_true')
