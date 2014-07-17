@@ -4,12 +4,60 @@ import logging
 from PIL import Image, ImageFilter
 
 
-class ImageNotSquare(Exception):
-    pass
-
-
 class TileNotAFactor(Exception):
     pass
+
+def main(args):
+    tile = Image.open(args.tile).convert('RGBA')
+    out = Image.new('RGBA', (args.width, args.height), args.background)
+
+    check_tile(tile)
+    if out.size[0] % tile.size[0] or out.size[1] % tile.size[0]:
+        raise TileNotAFactor('Tile of size {0} x {1} doesn\'t fit perfectly'
+               ' in {2} x {3}'.format(*(tile.size + out.size)))
+
+    if args.tile_filters:
+        tile = apply_filters(tile, args.tile_filters.split(','))
+
+    make_grid(out, tile, args.verbose)
+    if args.out_filters:
+        out = apply_filters(out, args.out_filters.split(','))
+    out.save(args.out)
+
+    if args.show:
+        out.show()
+
+
+def check_tile(tile):
+    if tile.size[0] > 40:
+        logging.warn('Tile image is larger than 40x40, making it into a thumbnail')
+        tile.thumbnail((40, 40))
+
+
+def make_grid(out, tile, verbose):
+    for x in range(0, out.size[0], tile.size[0]):
+        for y in range(0, out.size[1], tile.size[1]):
+            logging.debug('Placing tile at ({0}, {1})'.format(x, y))
+            out.paste(tile, (x, y))
+
+
+def apply_filters(img, filters):
+    filter_funcs = {'blur': ImageFilter.BLUR,
+                    'contour': ImageFilter.CONTOUR,
+                    'detail': ImageFilter.DETAIL,
+                    'edge_enhance': ImageFilter.EDGE_ENHANCE,
+                    'edge_enhance_more': ImageFilter.EDGE_ENHANCE_MORE,
+                    'emboss': ImageFilter.EMBOSS,
+                    'find_edges': ImageFilter.FIND_EDGES,
+                    'smooth': ImageFilter.SMOOTH,
+                    'smooth_more': ImageFilter.SMOOTH_MORE,
+                    'sharpen': ImageFilter.SHARPEN}
+
+    for filter in filters:
+        logging.debug("Applying filters {0} to {1}".format(filter, img))
+        img = img.filter(filter_funcs[filter])
+
+    return img
 
 def init():
     parser = argparse.ArgumentParser(description='A lightweight image tiler written in Python.',
@@ -41,61 +89,7 @@ def init():
 
     main(args)
 
-def main(args):
-    tile = Image.open(args.tile).convert('RGBA')
-    out = Image.new('RGBA', (args.width, args.height), args.background)
-
-    check_tile(tile)
-    if out.size[0] % tile.size[0] is not 0:
-        raise TileNotAFactor('Tile of size {0} x {1} doesn\'t fit perfectly'
-               ' in {2} x {3}'.format(*(tile.size + out.size)))
-
-    if args.tile_filters:
-        tile = apply_filters(tile, args.tile_filters.split(','))
-
-    make_grid(out, tile, args.verbose)
-    if args.out_filters:
-        out = apply_filters(out, args.out_filters.split(','))
-    out.save(args.out)
-
-    if args.show:
-        out.show()
-
-
-def check_tile(tile):
-    if tile.size[0] != tile.size[1]:
-        raise ImageNotSquare('Image size is {0} x {1}'.format(*tile.size))
-
-    if tile.size[0] > 40:
-        logger.warn('Tile image is larger than 40x40, making it into a thumbnail')
-        tile.thumbnail((40, 40))
-
-
-def make_grid(out, tile, verbose):
-    for x in range(0, out.size[0], tile.size[0]):
-        for y in range(0, out.size[1], tile.size[1]):
-            logger.debug('Placing tile at ({0}, {1})'.format(x, y))
-            out.paste(tile, (x, y))
-
-
-def apply_filters(img, filters):
-    filter_funcs = {'blur': ImageFilter.BLUR,
-                    'contour': ImageFilter.CONTOUR,
-                    'detail': ImageFilter.DETAIL,
-                    'edge_enhance': ImageFilter.EDGE_ENHANCE,
-                    'edge_enhance_more': ImageFilter.EDGE_ENHANCE_MORE,
-                    'emboss': ImageFilter.EMBOSS,
-                    'find_edges': ImageFilter.FIND_EDGES,
-                    'smooth': ImageFilter.SMOOTH,
-                    'smooth_more': ImageFilter.SMOOTH_MORE,
-                    'sharpen': ImageFilter.SHARPEN}
-
-    for filter in filters:
-        logger.debug("Applying filters {0} to {1}".format(filter, img))
-        img = img.filter(filter_funcs[filter])
-
-    return img
-
 
 if __name__ == '__main__':
     init()
+
