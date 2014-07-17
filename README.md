@@ -3,6 +3,15 @@ tyled
 
 A lightweight image tiler written in Python.
 
+
+We all like tiling window manager (hopefully...) so why not tiled images to go with them?
+
+Requirements
+=====
+
+* [Pillow](https://pypi.python.org/pypi/Pillow)
+* [Python 3](https://www.python.org/)
+
 Usage
 =====
 
