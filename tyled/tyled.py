@@ -12,7 +12,7 @@ def main(args):
     out = Image.new('RGBA', (args.width, args.height), args.background)
 
     check_tile(tile)
-    if out.size[0] % tile.size[0] or out.size[1] % tile.size[0]:
+    if out.size[0] % tile.size[0] or out.size[1] % tile.size[1]:
         raise TileNotAFactor('Tile of size {0} x {1} doesn\'t fit perfectly'
                ' in {2} x {3}'.format(*(tile.size + out.size)))
 
@@ -22,6 +22,10 @@ def main(args):
     make_grid(out, tile, args.verbose)
     if args.out_filters:
         out = apply_filters(out, args.out_filters.split(','))
+
+    if args.brightness:
+        out = change_brightness(out, args.brightness)
+
     out.save(args.out)
 
     if args.show:
@@ -40,6 +44,9 @@ def make_grid(out, tile, verbose):
             logging.debug('Placing tile at ({0}, {1})'.format(x, y))
             out.paste(tile, (x, y))
 
+def change_brightness(img, amount):
+    img = img.point(lambda x: x * amount)
+    return img
 
 def apply_filters(img, filters):
     filter_funcs = {'blur': ImageFilter.BLUR,
@@ -70,6 +77,7 @@ def init():
             help='The background colour that will be displayed where the tile has alpha')
     parser.add_argument('-w', '--width', type=int, required=True)
     parser.add_argument('-h', '--height', type=int, required=True)
+    parser.add_argument('-b', '--brightness', type=float)
     parser.add_argument('-of', '--out-filters', type=str, help='A comma '
     'separated list of filters to be applied to the output image')
     parser.add_argument('-tf', '--tile-filters', type=str, help='A comma '
