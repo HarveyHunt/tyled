@@ -33,4 +33,17 @@ Usage
 
 * **-v / --verbose:** Whether or not to display extra information during processing.
 
-* **-b / --brightness:** Increase or decrease the brightness of the generated image. Values about 1 will increase the brightness, values below will decrease.
+* **-e / --effects:** The effects to be applied to the generated image and the order in which they should be applied. Effects are separated by commas and the arguments passed to effects are separated by colons.
+
+Effects
+=====
+
+* [Brightness](#brightness)
+
+## Brightness
+Change the brightness of the image. A value of 1 causes no change. Less than one causes the image to be darkened and a value greater than 1 causes the image to be lightened.
+
+```
+-e brightness:1
+```
+
