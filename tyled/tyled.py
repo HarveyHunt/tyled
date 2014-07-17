@@ -2,6 +2,7 @@
 import argparse
 import logging
 from PIL import Image, ImageFilter
+from effects import apply_effects
 
 
 def main(args):
@@ -20,8 +21,8 @@ def main(args):
     if args.out_filters:
         out = apply_filters(out, args.out_filters.split(','))
 
-    if args.brightness:
-        out = change_brightness(out, args.brightness)
+    if args.effects:
+        out = apply_effects(out, args.effects.split(','))
 
     out.save(args.out)
 
@@ -41,9 +42,6 @@ def make_grid(out, tile, verbose):
             logging.debug('Placing tile at ({0}, {1})'.format(x, y))
             out.paste(tile, (x, y))
 
-def change_brightness(img, amount):
-    img = img.point(lambda x: x * amount)
-    return img
 
 def apply_filters(img, filters):
     filter_funcs = {'blur': ImageFilter.BLUR,
@@ -74,11 +72,13 @@ def init():
             help='The background colour that will be displayed where the tile has alpha')
     parser.add_argument('-w', '--width', type=int, required=True)
     parser.add_argument('-h', '--height', type=int, required=True)
-    parser.add_argument('-b', '--brightness', type=float)
     parser.add_argument('-of', '--out-filters', type=str, help='A comma '
     'separated list of filters to be applied to the output image')
     parser.add_argument('-tf', '--tile-filters', type=str, help='A comma '
     'separated list of filters to be applied to the tile image')
+    parser.add_argument('-e', '--effects', type=str, help='A comma '
+    'separated list of effects to be applied to the output image. Args are'
+    'colon separated e.g. effect_foo:1:2:3')
     parser.add_argument('-s', '--show', action='store_true',
             help='Show the image upon completion')
     parser.add_argument('-v', '--verbose', action='store_true')
@@ -97,4 +97,3 @@ def init():
 
 if __name__ == '__main__':
     init()
-
