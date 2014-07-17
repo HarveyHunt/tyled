@@ -15,7 +15,7 @@ Requirements
 Usage
 =====
 
-* **-t / --tile:** The filename of the image to be tiled. This image must be square (for now) and no larger than 40x40 (else a thumbnail will be automatically generated)
+* **-t / --tile:** The filename of the image to be tiled. This image must be no larger than 40x40 (else a thumbnail will be automatically generated)
 
 * **-o / --out:** The filename that the generated image will be saved to.
 
