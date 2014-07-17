@@ -2,3 +2,24 @@ tyled
 =====
 
 A lightweight image tiler written in Python.
+
+Usage
+=====
+
+* **-t / --tile:** The filename of the image to be tiled. This image must be square (for now) and no larger than 40x40 (else a thumbnail will be automatically generated)
+
+* **-o / --out:** The filename that the generated image will be saved to.
+
+* **-bg / --background:** The background colour of the generated image. If there is any areas of alpha in the tile, this colour will show through.
+
+* **-w / --width:** The width of the generated image.
+
+* **-h / --height:** The height of the generated image.
+
+* **-of / --out-filters:** The filters to be applied to the output image, after the tiles have been placed. Filters should be supplied as a comma separated list. Possible filters can be seen [here](http://pillow.readthedocs.org/en/latest/reference/ImageFilter.html#filters).
+
+* **-tf / --tile-filters:** The filters to be applied to the tile image, before being places. Filters should be supplied as a comma separated list. Possible filters can be seen [here](http://pillow.readthedocs.org/en/latest/reference/ImageFilter.html#filters).
+
+* **-s / --show:** When set, the generated image will be displayed upon completion.
+
+* **-v / --verbose:** Whether or not to display extra information during processing.
