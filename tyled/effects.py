@@ -18,8 +18,7 @@ def _parse_args(effect):
 
 
 def eff_brightness(img, amount):
-    img = img.point(lambda x: x * float(amount))
-    return img
+    return img.point(lambda x: x * float(amount))
 
 
 def apply_filters(img, filters):

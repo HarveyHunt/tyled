@@ -3,6 +3,7 @@ import argparse
 import logging
 from PIL import Image
 from tyled.effects import apply_effects, apply_filters
+from tyled.patterns import apply_pattern
 
 
 def main(args):
@@ -17,7 +18,9 @@ def main(args):
     if args.tile_filters:
         tile = apply_filters(tile, args.tile_filters.split(','))
 
-    make_grid(out, tile, args.verbose)
+
+    out = apply_pattern(out, tile, args.pattern)
+
     if args.out_filters:
         out = apply_filters(out, args.out_filters.split(','))
 
@@ -36,13 +39,6 @@ def check_tile(tile):
         tile.thumbnail((40, 40))
 
 
-def make_grid(out, tile, verbose):
-    for x in range(0, out.size[0], tile.size[0]):
-        for y in range(0, out.size[1], tile.size[1]):
-            logging.debug('Placing tile at ({0}, {1})'.format(x, y))
-            out.paste(tile, (x, y))
-
-
 def init():
     parser = argparse.ArgumentParser(description='A lightweight image tiler written in Python.',
                                     conflict_handler='resolve')
@@ -56,17 +52,24 @@ def init():
     parser.add_argument('-h', '--height', type=int, required=True)
     parser.add_argument('-of', '--out-filters', type=str, help='A comma '
     'separated list of filters to be applied to the output image. Args are colon '
-    'separated and dictate how many times to apply the filter.')
+    'separated and dictate how many times to apply the filter')
     parser.add_argument('-tf', '--tile-filters', type=str, help='A comma '
     'separated list of filters to be applied to the tile image. Args are colon '
-    'separated and dictate how many times to apply the filter.')
+    'separated and dictate how many times to apply the filter')
     parser.add_argument('-e', '--effects', type=str, help='A comma '
     'separated list of effects to be applied to the output image. Args are'
     'colon separated e.g. effect_foo:1:2:3')
     parser.add_argument('-s', '--show', action='store_true',
             help='Show the image upon completion')
+    parser.add_argument('-xc', '--xcolours', type=str, help='The path to the '
+            'file which contains the xcolours to be used')
+    parser.add_argument('-p', '--pattern', type=str, help='The pattern that '
+            'the tile should be arranged in', default='grid')
     parser.add_argument('-v', '--verbose', action='store_true')
     args = parser.parse_args()
+
+    if args.xcolours and args.tile:
+        raise argparse.ArgumentError('Xcolours and tile image can\'t both be set')
 
     logging.basicConfig(level = logging.DEBUG if args.verbose else logging.WARN)
 
