@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import re
 import logging
 from PIL import Image
 from tyled.effects import apply_effects, apply_filters
@@ -14,13 +15,14 @@ def main(args):
         for tile in args.tiles.split(','):
             tile = Image.open(tile).convert('RGBA')
             check_tile(tile)
-            if out.size[0] % tile.size[0] or out.size[1] % tile.size[1]:
-                logging.warn('Tile of size {0} x {1} doesn\'t fit perfectly'
-                    ' in {2} x {3}'.format(*(tile.size + out.size)))
             tiles.append(tile)
 
     elif args.xcolours:
         colours = parse_colours(args.xcolours)
+        tiles = generate_tiles(colours, args.size)
+    elif args.colours:
+        colours = args.colours.split(',')
+        tiles = generate_tiles(colours, args.size)
     else:
         raise ValueError('No list of tiles or colour information have been inputted')
 
@@ -40,12 +42,27 @@ def main(args):
     if args.show:
         out.show()
 
+def generate_tiles(colours, size):
+    size = tuple([int(x) for x in size.lower().split('x')])
+    tiles = []
+    for colour in colours:
+        tiles.append(Image.new('RGBA', size, colour))
+    return tiles
+
 
 def parse_colours(filename):
+    colours = []
+    colour_re = re.compile('.*?(color[^:]+|foreground|background):\s*(#[\da-z]{6})')
     with open(filename, 'r') as xc:
         for line in xc.readlines():
             if line.startswith('!'):
                 continue
+            match = colour_re.search(line.lower())
+            if match:
+                _, colour = match.groups()
+                colours.append(colour)
+
+    return colours
 
 def check_tile(tile):
     if tile.size[0] > 40:
@@ -57,7 +74,7 @@ def init():
     parser = argparse.ArgumentParser(description='A lightweight image tiler written in Python.',
                                     conflict_handler='resolve')
     parser.add_argument('-t', '--tiles', type=str, help='A comma separated list '
-                    'of tile images', required=True)
+                    'of tile images')
     parser.add_argument('-o', '--out', type=str, help='The name of the image used as output',
                         required=True)
     parser.add_argument('-bg', '--background', type=str, default='#000000',
@@ -73,16 +90,20 @@ def init():
     parser.add_argument('-e', '--effects', type=str, help='A comma '
     'separated list of effects to be applied to the output image. Args are'
     'colon separated e.g. effect_foo:1:2:3')
-    parser.add_argument('-s', '--show', action='store_true',
+    parser.add_argument('-sh', '--show', action='store_true',
             help='Show the image upon completion')
     parser.add_argument('-xc', '--xcolours', type=str, help='The path to the '
             'file which contains the xcolours to be used')
     parser.add_argument('-p', '--pattern', type=str, help='The pattern that '
             'the tile should be arranged in', default='grid')
+    parser.add_argument('-c', '--colours', type=str, help='The colours that '
+            'should be used for generating tiles.')
+    parser.add_argument('-s', '--size', type=str, help='The size of the tiles that will be '
+            'generated if colours are passed.', default='10x10')
     parser.add_argument('-v', '--verbose', action='store_true')
     args = parser.parse_args()
 
-    if args.xcolours and args.tile:
+    if args.xcolours and args.tiles:
         raise argparse.ArgumentError('Xcolours and tile image can\'t both be set')
 
     logging.basicConfig(level = logging.DEBUG if args.verbose else logging.WARN)
