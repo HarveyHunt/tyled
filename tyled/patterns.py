@@ -1,5 +1,6 @@
 import logging
 
+
 def apply_pattern(img, tiles, pattern):
     pattern_funcs = {'grid': grid,
                     'hstripe': hstripe,
@@ -22,11 +23,14 @@ def _make_grid(out, tiles, design):
 
     return out
 
+
 def grid(out, tiles):
     return _make_grid(out, tiles, 'grid')
 
+
 def hstripe(out, tiles):
     return _make_grid(out, tiles, 'hstripe')
+
 
 def vstripe(out, tiles):
     return _make_grid(out, tiles, 'vstripe')

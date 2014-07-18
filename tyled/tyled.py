@@ -18,7 +18,7 @@ def main(args):
             tiles.append(tile)
 
     elif args.xcolours:
-        colours = parse_colours(args.xcolours)
+        colours = parse_xresources(args.xcolours)
         tiles = generate_tiles(colours, args.size)
     elif args.colours:
         colours = args.colours.split(',')
@@ -50,7 +50,7 @@ def generate_tiles(colours, size):
     return tiles
 
 
-def parse_colours(filename):
+def parse_xresources(filename):
     colours = []
     colour_re = re.compile('.*?(color[^:]+|foreground|background):\s*(#[\da-z]{6})')
     with open(filename, 'r') as xc:
@@ -63,6 +63,7 @@ def parse_colours(filename):
                 colours.append(colour)
 
     return colours
+
 
 def check_tile(tile):
     if tile.size[0] > 40:
@@ -106,7 +107,10 @@ def init():
     if args.xcolours and args.tiles:
         raise argparse.ArgumentError('Xcolours and tile image can\'t both be set')
 
-    logging.basicConfig(level = logging.DEBUG if args.verbose else logging.WARN)
+    if args.xcolours and args.colours:
+        raise argparse.ArgumentError('Xcolours and colours can\'t both be set')
+
+    logging.basicConfig(level=logging.DEBUG if args.verbose else logging.WARN)
 
     main(args)
 

@@ -1,6 +1,7 @@
 import logging
 from PIL import ImageFilter
 
+
 def apply_effects(img, effects):
     effects = effects.split(',')
 
