@@ -2,6 +2,8 @@ import logging
 from PIL import ImageFilter
 
 def apply_effects(img, effects):
+    effects = effects.split(',')
+
     effect_funcs = {'brightness': eff_brightness}
     for e in effects:
         eff, args = _parse_args(e)
@@ -21,7 +23,9 @@ def eff_brightness(img, amount):
     return img.point(lambda x: x * float(amount))
 
 
-def apply_filters(img, filters):
+def apply_filters(imgs, filters):
+    filters = filters.split(',')
+
     filter_funcs = {'blur': ImageFilter.BLUR,
                     'contour': ImageFilter.CONTOUR,
                     'detail': ImageFilter.DETAIL,
@@ -33,10 +37,11 @@ def apply_filters(img, filters):
                     'smooth_more': ImageFilter.SMOOTH_MORE,
                     'sharpen': ImageFilter.SHARPEN}
 
-    for f in filters:
-        filter, count = _parse_args(f)
-        for i in range(int(count[0])):
-            logging.debug("Applying filter {0} to {1}".format(filter, img))
-            img = img.filter(filter_funcs[filter])
+    for img in imgs:
+        for f in filters:
+            filter, count = _parse_args(f)
+            for i in range(int(count[0])):
+                logging.debug("Applying filter {0} to {1}".format(filter, img))
+                imgs.append(img.filter(filter_funcs[filter]))
 
-    return img
+    return imgs

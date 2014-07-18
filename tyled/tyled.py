@@ -7,31 +7,45 @@ from tyled.patterns import apply_pattern
 
 
 def main(args):
-    tile = Image.open(args.tile).convert('RGBA')
     out = Image.new('RGBA', (args.width, args.height), args.background)
 
-    check_tile(tile)
-    if out.size[0] % tile.size[0] or out.size[1] % tile.size[1]:
-        logging.warn('Tile of size {0} x {1} doesn\'t fit perfectly'
-               ' in {2} x {3}'.format(*(tile.size + out.size)))
+    tiles = []
+    if args.tiles:
+        for tile in args.tiles.split(','):
+            tile = Image.open(tile).convert('RGBA')
+            check_tile(tile)
+            if out.size[0] % tile.size[0] or out.size[1] % tile.size[1]:
+                logging.warn('Tile of size {0} x {1} doesn\'t fit perfectly'
+                    ' in {2} x {3}'.format(*(tile.size + out.size)))
+            tiles.append(tile)
+
+    elif args.xcolours:
+        colours = parse_colours(args.xcolours)
+    else:
+        raise ValueError('No list of tiles or colour information have been inputted')
 
     if args.tile_filters:
-        tile = apply_filters(tile, args.tile_filters.split(','))
+        tiles = apply_filters(tiles, args.tile_filters)
 
-
-    out = apply_pattern(out, tile, args.pattern)
+    out = apply_pattern(out, tiles, args.pattern)
 
     if args.out_filters:
-        out = apply_filters(out, args.out_filters.split(','))
+        out = apply_filters(list(out), args.out_filters)
 
     if args.effects:
-        out = apply_effects(out, args.effects.split(','))
+        out = apply_effects(out, args.effects)
 
     out.save(args.out)
 
     if args.show:
         out.show()
 
+
+def parse_colours(filename):
+    with open(filename, 'r') as xc:
+        for line in xc.readlines():
+            if line.startswith('!'):
+                continue
 
 def check_tile(tile):
     if tile.size[0] > 40:
@@ -42,8 +56,8 @@ def check_tile(tile):
 def init():
     parser = argparse.ArgumentParser(description='A lightweight image tiler written in Python.',
                                     conflict_handler='resolve')
-    parser.add_argument('-t', '--tile', type=str, help='The image to be tiled',
-                        required=True)
+    parser.add_argument('-t', '--tiles', type=str, help='A comma separated list '
+                    'of tile images', required=True)
     parser.add_argument('-o', '--out', type=str, help='The name of the image used as output',
                         required=True)
     parser.add_argument('-bg', '--background', type=str, default='#000000',
