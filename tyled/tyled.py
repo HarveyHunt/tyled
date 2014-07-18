@@ -14,6 +14,7 @@ def main(args):
     if args.tiles:
         for tile in args.tiles.split(','):
             tile = Image.open(tile).convert('RGBA')
+            logging.debug('Opened tile {0}'.format(tile))
             check_tile(tile)
             tiles.append(tile)
 
@@ -47,6 +48,7 @@ def generate_tiles(colours, size):
     tiles = []
     for colour in colours:
         tiles.append(Image.new('RGBA', size, colour))
+        logging.debug('Generated tile with colour {0}'.format(colour))
     return tiles
 
 
@@ -60,6 +62,7 @@ def parse_xresources(filename):
             match = colour_re.search(line.lower())
             if match:
                 _, colour = match.groups()
+                logging.debug('Found colour {0} in file {1}'.format(colour, filename))
                 colours.append(colour)
 
     return colours

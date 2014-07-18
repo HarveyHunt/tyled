@@ -9,6 +9,7 @@ def apply_pattern(img, tiles, pattern):
 
 
 def _make_grid(out, tiles, design):
+    logging.debug('Arranging tiles in {0} layout'.format(design))
     cnt = 0
     for x in range(0, out.size[0], tiles[0].size[0]):
         if design == 'grid' or design == 'vstripe':
