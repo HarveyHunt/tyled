@@ -32,7 +32,7 @@ def main(args):
     out = apply_pattern(out, tiles, args.pattern)
 
     if args.out_filters:
-        out = apply_filters(list(out), args.out_filters)
+        out = apply_filters(out, args.out_filters)
 
     if args.effects:
         out = apply_effects(out, args.effects)

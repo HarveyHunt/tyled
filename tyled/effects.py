@@ -27,7 +27,7 @@ def eff_brightness(img, amount):
 def apply_filters(imgs, filters):
     filters = filters.split(',')
 
-    filter_funcs = {'blur': ImageFilter.BLUR,
+    filter_const = {'blur': ImageFilter.BLUR,
                     'contour': ImageFilter.CONTOUR,
                     'detail': ImageFilter.DETAIL,
                     'edge_enhance': ImageFilter.EDGE_ENHANCE,
@@ -38,11 +38,19 @@ def apply_filters(imgs, filters):
                     'smooth_more': ImageFilter.SMOOTH_MORE,
                     'sharpen': ImageFilter.SHARPEN}
 
+    if not isinstance(imgs, list):
+        for f in filters:
+            filter, count = _parse_args(f)
+            for i in range(int(count[0])):
+                logging.debug("Applying filter {0} to {1}".format(filter, imgs))
+                imgs = imgs.filter(filter_const[filter])
+        return imgs
+
     for img in imgs:
         for f in filters:
             filter, count = _parse_args(f)
             for i in range(int(count[0])):
                 logging.debug("Applying filter {0} to {1}".format(filter, img))
-                imgs.append(img.filter(filter_funcs[filter]))
+                imgs.append(img.filter(filter_const[filter]))
 
     return imgs
