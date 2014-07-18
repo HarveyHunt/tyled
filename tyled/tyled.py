@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import argparse
 import logging
-from PIL import Image, ImageFilter
-from effects import apply_effects
+from PIL import Image
+from tyled.effects import apply_effects, apply_filters
 
 
 def main(args):
@@ -43,24 +43,6 @@ def make_grid(out, tile, verbose):
             out.paste(tile, (x, y))
 
 
-def apply_filters(img, filters):
-    filter_funcs = {'blur': ImageFilter.BLUR,
-                    'contour': ImageFilter.CONTOUR,
-                    'detail': ImageFilter.DETAIL,
-                    'edge_enhance': ImageFilter.EDGE_ENHANCE,
-                    'edge_enhance_more': ImageFilter.EDGE_ENHANCE_MORE,
-                    'emboss': ImageFilter.EMBOSS,
-                    'find_edges': ImageFilter.FIND_EDGES,
-                    'smooth': ImageFilter.SMOOTH,
-                    'smooth_more': ImageFilter.SMOOTH_MORE,
-                    'sharpen': ImageFilter.SHARPEN}
-
-    for filter in filters:
-        logging.debug("Applying filters {0} to {1}".format(filter, img))
-        img = img.filter(filter_funcs[filter])
-
-    return img
-
 def init():
     parser = argparse.ArgumentParser(description='A lightweight image tiler written in Python.',
                                     conflict_handler='resolve')
@@ -73,9 +55,11 @@ def init():
     parser.add_argument('-w', '--width', type=int, required=True)
     parser.add_argument('-h', '--height', type=int, required=True)
     parser.add_argument('-of', '--out-filters', type=str, help='A comma '
-    'separated list of filters to be applied to the output image')
+    'separated list of filters to be applied to the output image. Args are colon '
+    'separated and dictate how many times to apply the filter.')
     parser.add_argument('-tf', '--tile-filters', type=str, help='A comma '
-    'separated list of filters to be applied to the tile image')
+    'separated list of filters to be applied to the tile image. Args are colon '
+    'separated and dictate how many times to apply the filter.')
     parser.add_argument('-e', '--effects', type=str, help='A comma '
     'separated list of effects to be applied to the output image. Args are'
     'colon separated e.g. effect_foo:1:2:3')
@@ -84,13 +68,7 @@ def init():
     parser.add_argument('-v', '--verbose', action='store_true')
     args = parser.parse_args()
 
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG if args.verbose else logging.WARN)
-    handler = logging.StreamHandler()
-    handler.setLevel(logging.DEBUG if args.verbose else logging.WARN)
-    formatter = logging.Formatter('%(levelname)s - %(message)s')
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
+    logging.basicConfig(level = logging.DEBUG if args.verbose else logging.WARN)
 
     main(args)
 

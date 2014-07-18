@@ -1,15 +1,43 @@
+import logging
+from PIL import ImageFilter
+
 def apply_effects(img, effects):
-    effect_funcs = {'brightness': change_brightness}
+    effect_funcs = {'brightness': eff_brightness}
     for e in effects:
-        eff, args = _parse_effect(e)
+        eff, args = _parse_args(e)
+        logging.debug('Applying effect {0} with args {1} to {2}'.format(
+            eff, args, img))
         img = effect_funcs[eff](img, *args)
     return img
 
-def _parse_effect(effect):
+
+def _parse_args(effect):
     effect = effect.split(':')
     e, *args = effect
     return (e, args)
 
-def change_brightness(img, amount):
+
+def eff_brightness(img, amount):
     img = img.point(lambda x: x * float(amount))
+    return img
+
+
+def apply_filters(img, filters):
+    filter_funcs = {'blur': ImageFilter.BLUR,
+                    'contour': ImageFilter.CONTOUR,
+                    'detail': ImageFilter.DETAIL,
+                    'edge_enhance': ImageFilter.EDGE_ENHANCE,
+                    'edge_enhance_more': ImageFilter.EDGE_ENHANCE_MORE,
+                    'emboss': ImageFilter.EMBOSS,
+                    'find_edges': ImageFilter.FIND_EDGES,
+                    'smooth': ImageFilter.SMOOTH,
+                    'smooth_more': ImageFilter.SMOOTH_MORE,
+                    'sharpen': ImageFilter.SHARPEN}
+
+    for f in filters:
+        filter, count = _parse_args(f)
+        for i in range(int(count[0])):
+            logging.debug("Applying filter {0} to {1}".format(filter, img))
+            img = img.filter(filter_funcs[filter])
+
     return img
