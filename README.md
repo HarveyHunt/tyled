@@ -12,6 +12,15 @@ Requirements
 * [Pillow](https://pypi.python.org/pypi/Pillow)
 * [Python 3](https://www.python.org/)
 
+
+Installation
+=====
+Tyled has a setup.py that makes installation easy. Open a terminal, change to the directory that tyled is in and enter the following:
+
+```
+sudo python setup.py install
+```
+
 Usage
 =====
 
