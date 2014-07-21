@@ -109,10 +109,10 @@ def init():
     args = parser.parse_args()
 
     if args.xcolours and args.tiles:
-        raise argparse.ArgumentError('Xcolours and tile image can\'t both be set')
+        raise ValueError('Xcolours and tile image can\'t both be set')
 
     if args.xcolours and args.colours:
-        raise argparse.ArgumentError('Xcolours and colours can\'t both be set')
+        raise ValueError('Xcolours and colours can\'t both be set')
 
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.WARN)
 
