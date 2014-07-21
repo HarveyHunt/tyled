@@ -59,12 +59,20 @@ Effects
 =====
 
 * [Brightness](#brightness)
+* [Resize](#resize)
 
-## Brightness
+### Brightness
 Change the brightness of the image. A value of 1 causes no change. Less than one causes the image to be darkened and a value greater than 1 causes the image to be lightened.
 
 ```
 -e brightness:1
+```
+
+### Resize
+Resize the final image by the scale factor passed as an argument. 1 will cause no change.
+
+```
+-e resize:4
 ```
 
 Patterns
