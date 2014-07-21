@@ -43,6 +43,7 @@ def main(args):
     if args.show:
         out.show()
 
+
 def generate_tiles(colours, size):
     size = tuple([int(x) for x in size.lower().split('x')])
     tiles = []
