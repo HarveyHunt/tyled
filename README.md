@@ -15,6 +15,8 @@ Requirements
 
 Installation
 =====
+If you're lucky enough to use Arch Linux then there is an [AUR](https://aur.archlinux.org/packages/tyled-git/) package.
+
 Tyled has a setup.py that makes installation easy. Open a terminal, change to the directory that tyled is in and enter the following:
 
 ```
